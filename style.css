@@ -29,10 +29,24 @@ body {
 
 .snake-cube {
     position: absolute;
+
     height: 20px;
-    width: 20px;
+    width: 60px;
     top: 20px;
     left: 40px;
 
     background-color: #73d32b;
+    background-image: url("boxes.svg");
+    background-size: 20px;
+}
+
+.apple {
+    position: absolute;
+
+    height: 20px;
+    padding: 1px;
+    top: 100px;
+    left: 200px;
+
+    padding-top: 0px;
 }
