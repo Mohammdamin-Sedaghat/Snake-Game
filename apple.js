@@ -1,32 +1,41 @@
-let direction;
-let topDistance;
-let leftDistance;
+const ctx = document.querySelector('canvas').getContext('2d');
+const img = new Image();
+img.src = './boxes.svg';
 
-runGame()
+function uploadBackground() {
+    ctx.clearRect(0,0,500,500)
+    const pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0,0,500, 500);
+}
 
-function runGame() {
-    window.addEventListener('keydown', (event)=>{
-        if (event.key === "w") {
-            direction = 'e';
-            topDistance = document.querySelector('.snake-cube').computedStyleMap().get('top').value;
-            leftDistance = document.querySelector('.snake-cube').computedStyleMap().get('left').value;
-            move();
+let particleArray = [{
+    x: 48,
+    y: 48,
+}, {
+    x: 96,
+    y: 48,
+}, {
+    x: 96,
+    y: 96, 
+}
+]
+
+function game() {
+    uploadBackground();
+    particleArray.forEach((particle, i) =>{
+        if (i === 2) {
+            return;
         }
+        ctx.beginPath();
+        ctx.fillStyle = "green";
+        ctx.fillRect(particle.x, particle.y, 
+            particleArray[i+1].x - particle.x+16, 
+            particleArray[i+1].y - particle.y+16);
+        ctx.fill();
     });
+
+    // window.requestAnimationFrame(game);
 }
 
-async function move() {
-    while (checkBorder(topDistance, leftDistance)) {
-        await new Promise((resolve)=> {
-            setTimeout(() => {
-                document.querySelector('.snake-cube').style.left = `${leftDistance + 10}px`;
-                leftDistance += 10;
-                resolve();
-            }, 100);
-        });
-    }
-}
-
-function checkBorder(topDistance, leftDistance) {
-    return (topDistance <= 410) && (0 <= topDistance) && (leftDistance <= 410) && (0 <= leftDistance);
-}
+img.addEventListener('load', game);
