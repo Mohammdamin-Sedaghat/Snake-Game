@@ -1,64 +1,79 @@
 const ctx = document.querySelector('canvas').getContext('2d');
-const img = new Image();
-img.src = './boxes.svg';
+const backgroundImg = new Image();
+backgroundImg.src = './boxes.svg';
 const apple = new Image();
 apple.src = './apple.svg';
 let move;
+let snakeArr;
+let speed;
+let appleLoc;
+let direction;
+let newDir;
+
+document.querySelector('.gameover-button').innerHTML = "Start Nigger";
+
+backgroundImg.addEventListener('load', uploadBackground);
+document.querySelector('.gameover-button').addEventListener('click', ()=>{
+    document.querySelector('.gameover-button').innerHTML = "Game Over";
+    document.querySelector('.gameover-cont').style.visibility = 'hidden';
+    startGame();
+});
 
 //function to make background
 function uploadBackground() {
     ctx.clearRect(0,0,500,500)
-    const pattern = ctx.createPattern(img, 'repeat');
+    const pattern = ctx.createPattern(backgroundImg, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0,0,500, 500);
 }
 
-let snakeArr = [{
-    x: 48,
-    y: 48,
-}, {
-    x: 64,
-    y: 48,
-}, {
-    x: 80,
-    y: 48, 
-}, {
-    x: 96,
-    y: 48,}];
+//function to start (restart) game
+function startGame() {
+    snakeArr = [{
+        x: 48,
+        y: 16 * 14,
+    }, {
+        x: 64,
+        y: 16 * 14,
+    }, {
+        x: 80,
+        y: 16 * 14, 
+    }, {
+        x: 96,
+        y: 16 * 14,}];
 
-let speed = 100;
+    speed = 100;
 
-let appleLoc = {
-    x: 112,
-    y: 112
+    appleLoc = {x: 112, y: 112 }
+    newDir = undefined;
+    direction = '+x';
+
+    //adding user intervension
+    document.addEventListener('keydown', (event)=>{
+        if (event.key.toLocaleLowerCase() == 'd') {
+            if (direction[1] === 'y') {
+                newDir = '+x'
+            }
+        } else if (event.key.toLocaleLowerCase() == 's') {
+            if (direction[1] === 'x') {
+                newDir = '+y'
+            }
+        } else if (event.key.toLocaleLowerCase() == 'a') {
+            if (direction[1] === 'y') {
+                newDir = '-x'
+            }
+        } else if (event.key.toLocaleLowerCase() == 'w') {
+            if (direction[1] === 'x') {
+                newDir = '-y'
+            }
+        } else if (event.key == ' ') {
+            console.log('rawr')
+            clearTimeout(move)
+        }
+    });
+
+    game();
 }
-
-let direction = '+x';
-let newDir = undefined;
-
-//adding user intervension
-document.addEventListener('keydown', (event)=>{
-    if (event.key.toLocaleLowerCase() == 'd') {
-        if (direction[1] === 'y') {
-            newDir = '+x'
-        }
-    } else if (event.key.toLocaleLowerCase() == 's') {
-        if (direction[1] === 'x') {
-            newDir = '+y'
-        }
-    } else if (event.key.toLocaleLowerCase() == 'a') {
-        if (direction[1] === 'y') {
-            newDir = '-x'
-        }
-    } else if (event.key.toLocaleLowerCase() == 'w') {
-        if (direction[1] === 'x') {
-            newDir = '-y'
-        }
-    } else if (event.key == ' ') {
-        console.log('rawr')
-        clearTimeout(move)
-    }
-});
 
 function game() {
     direction = newDir || direction
@@ -76,6 +91,7 @@ function game() {
         }
     }
     if (touched) {
+        document.querySelector('.gameover-cont').style.visibility = 'visible';
         return ;
     }
 
@@ -95,7 +111,7 @@ function game() {
         if (i == snakeArr.length - 1) {
             if (direction[1] == "x"){
                 particle.x = eval(particle.x + direction[0] + 16);
-            } else {
+            } else if (direction[1] == 'y') {
                 particle.y = eval(particle.y + direction[0] + 16);
             }
             return ;
@@ -109,6 +125,7 @@ function game() {
         snakeArr[snakeArr.length - 1].x < 0 ||
         snakeArr[snakeArr.length - 1].y > 480 - 16 ||
         snakeArr[snakeArr.length - 1].y < 0) {
+        document.querySelector('.gameover-cont').style.visibility = 'visible';
         return ;
     }
 
@@ -131,4 +148,3 @@ function game() {
 
     move = setTimeout(game, speed);
 }
-img.addEventListener('load', game);
