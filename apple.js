@@ -10,7 +10,7 @@ let appleLoc;
 let direction;
 let newDir;
 
-document.querySelector('.gameover-button').innerHTML = "Start Nigger";
+document.querySelector('.gameover-button').innerHTML = "Start Game";
 
 backgroundImg.addEventListener('load', uploadBackground);
 document.querySelector('.gameover-button').addEventListener('click', ()=>{
@@ -44,7 +44,7 @@ function startGame() {
 
     speed = 100;
 
-    appleLoc = {x: 112, y: 112 }
+    appleLoc = {x: 16 * 18, y: 16*14}
     newDir = undefined;
     direction = '+x';
 
