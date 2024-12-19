@@ -1,6 +1,8 @@
 const ctx = document.querySelector('canvas').getContext('2d');
 const img = new Image();
 img.src = './boxes.svg';
+const apple = new Image();
+apple.src = './apple.svg';
 let move;
 
 function uploadBackground() {
@@ -22,10 +24,14 @@ let snakeArr = [{
 }, {
     x: 96,
     y: 48, 
-}
-];
+}];
 
 let speed = 100;
+
+let appleLoc = {
+    x: 112,
+    y: 112
+}
 
 let direction = '+x';
 //adding user intervension
@@ -53,7 +59,13 @@ document.addEventListener('keydown', (event)=>{
 });
 
 function game() {
-    const t = new Date;
+    //checking bounderies
+    if (snakeArr[snakeArr.length - 1].x >= 480 - 16 || 
+        snakeArr[snakeArr.length - 1].x <= 0 ||
+        snakeArr[snakeArr.length - 1].y >= 480 - 16 ||
+        snakeArr[snakeArr.length - 1].y <= 0) {
+        return ;
+    } 
     //making the background 
     uploadBackground();
     //moving the snake
@@ -69,6 +81,8 @@ function game() {
         particle.x = snakeArr[i+1].x;
         particle.y = snakeArr[i+1].y;
     });
+
+    ctx.drawImage(apple, appleLoc.x, appleLoc.y);
     
 
     //drawing the snake
