@@ -5,6 +5,7 @@ const apple = new Image();
 apple.src = './apple.svg';
 let move;
 
+//function to make background
 function uploadBackground() {
     ctx.clearRect(0,0,500,500)
     const pattern = ctx.createPattern(img, 'repeat');
@@ -23,8 +24,7 @@ let snakeArr = [{
     y: 48, 
 }, {
     x: 96,
-    y: 48, 
-}];
+    y: 48,}];
 
 let speed = 100;
 

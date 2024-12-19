@@ -20,3 +20,20 @@ canvas {
     7.9px 7.5px 8.2px -3.3px hsl(var(--shadow-color) / 0.48),
     25.7px 24.6px 26.7px -5px hsl(var(--shadow-color) / 0.24);
 }
+
+.gameover-cont {
+    position: absolute;
+    background-color: #d2f473;
+
+    height: 240px;
+    width: 240px;
+    top: 200px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameover-button {
+    
+}
