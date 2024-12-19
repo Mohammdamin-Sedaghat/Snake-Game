@@ -34,21 +34,22 @@ let appleLoc = {
 }
 
 let direction = '+x';
+
 //adding user intervension
 document.addEventListener('keydown', (event)=>{
-    if (event.key == 'd') {
+    if (event.key.toLocaleLowerCase() == 'd') {
         if (direction[1] === 'y') {
             direction = '+x'
         }
-    } else if (event.key == 's') {
+    } else if (event.key.toLocaleLowerCase() == 's') {
         if (direction[1] === 'x') {
             direction = '+y'
         }
-    } else if (event.key == 'a') {
+    } else if (event.key.toLocaleLowerCase() == 'a') {
         if (direction[1] === 'y') {
             direction = '-x'
         }
-    } else if (event.key == 'w') {
+    } else if (event.key.toLocaleLowerCase() == 'w') {
         if (direction[1] === 'x') {
             direction = '-y'
         }
@@ -60,11 +61,38 @@ document.addEventListener('keydown', (event)=>{
 
 function game() {
     //checking bounderies
-    if (snakeArr[snakeArr.length - 1].x >= 480 - 16 || 
-        snakeArr[snakeArr.length - 1].x <= 0 ||
-        snakeArr[snakeArr.length - 1].y >= 480 - 16 ||
-        snakeArr[snakeArr.length - 1].y <= 0) {
+    if (snakeArr[snakeArr.length - 1].x > 481 || 
+        snakeArr[snakeArr.length - 1].x < 0 ||
+        snakeArr[snakeArr.length - 1].y > 481 ||
+        snakeArr[snakeArr.length - 1].y < 0) {
         return ;
+    }
+
+    //checking if the snake has crashed
+    let touched = false;
+    let last = snakeArr[snakeArr.length - 1];
+    for (let i = 0; i < snakeArr.length; i++) {
+        if (i === snakeArr.length -1) {
+            break;
+        } 
+        if (snakeArr[i].x === last.x && 
+            snakeArr[i].y === last.y) {
+            touched = true;
+            break;
+        }
+    }
+    if (touched) {
+        return ;
+    }
+
+    if (snakeArr[snakeArr.length - 1].x === appleLoc.x &&
+        snakeArr[snakeArr.length - 1].y === appleLoc.y) {
+        snakeArr.push({
+            x: appleLoc.x,
+            y: appleLoc.y
+        });
+        appleLoc.x = Math.floor(Math.random() * 30) * 16;
+        appleLoc.y = Math.floor(Math.random() * 30) * 16;
     } 
     //making the background 
     uploadBackground();
@@ -82,6 +110,7 @@ function game() {
         particle.y = snakeArr[i+1].y;
     });
 
+    //apples
     ctx.drawImage(apple, appleLoc.x, appleLoc.y);
     
 
