@@ -107,18 +107,21 @@ function game() {
     } 
 
     //moving the snake
-    snakeArr.forEach((particle, i) =>{
-        if (i == snakeArr.length - 1) {
-            if (direction[1] == "x"){
-                particle.x = eval(particle.x + direction[0] + 16);
-            } else if (direction[1] == 'y') {
-                particle.y = eval(particle.y + direction[0] + 16);
-            }
-            return ;
+    const tail = snakeArr[snakeArr.length - 1];
+    let newTail;
+    if (direction[1] == "x"){
+        newTail = {
+            x: eval(tail.x + direction[0] + 16),
+            y: tail.y
         }
-        particle.x = snakeArr[i+1].x;
-        particle.y = snakeArr[i+1].y;
-    });
+    } else if (direction[1] == 'y') {
+        newTail = {
+            x: tail.x,
+            y: eval(tail.y + direction[0] + 16)
+        }
+    }
+    snakeArr.splice(0, 1);
+    snakeArr.push(newTail)
 
     //checking bounderies
     if (snakeArr[snakeArr.length - 1].x > 480 - 16 || 
