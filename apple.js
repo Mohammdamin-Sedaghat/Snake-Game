@@ -21,10 +21,34 @@ document.querySelector('.gameover-button').addEventListener('click', ()=>{
 
 //function to make background
 function uploadBackground() {
-    ctx.clearRect(0,0,500,500)
-    const pattern = ctx.createPattern(backgroundImg, 'repeat');
-    ctx.fillStyle = pattern;
-    ctx.fillRect(0,0,500, 500);
+    ctx.clearRect(0,0,500,500);
+
+    // const pattern = ctx.createPattern(backgroundImg, 'repeat');
+    // ctx.fillStyle = pattern;
+    // ctx.fillRect(0,0,500, 500);
+    let head = snakeArr || [{x:240,y:240}];
+    head = head[head.length -1];
+    const radGrad = ctx.createRadialGradient(head.x+8, head.y+8, 10, 240, 240, 360);
+    radGrad.addColorStop(0, "#ffff00");
+    radGrad.addColorStop(0.2, "#39FF13");
+    radGrad.addColorStop(0.8, "#fe00fe");
+    radGrad.addColorStop(1, "#fe00fe");
+
+    ctx.globalAlpha = 0.2;
+    ctx.strokeStyle = radGrad;
+    ctx.lineWidth = 2;
+    for (let i=1;i < 30; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i*16, 0);
+        ctx.lineTo(i*16,480);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 16*i);
+        ctx.lineTo(480, i*16);
+        ctx.stroke();
+    }
+
 }
 
 //function to start (restart) game
@@ -134,19 +158,18 @@ function game() {
 
     //making the background 
     uploadBackground();
+    ctx.globalAlpha = 1;
 
     //apples
     ctx.drawImage(apple, appleLoc.x, appleLoc.y);
-    
 
     //drawing the snake
+    let size = snakeArr.length;
     snakeArr.forEach((particle, i) =>{
-        ctx.fillStyle = "green";
-        if (i === snakeArr.length - 1) {
-            ctx.fillStyle = 'lightgreen';
-        }
+        ctx.fillStyle = `rgb(${9+(35*i/size)}, ${9+(210*i/size)}, ${121+(134*i/size)})`;
+        ctx.strokeStyle = 'blue';
         ctx.fillRect(particle.x, particle.y, 16, 16);
-        ctx.strokeRect(particle.x, particle.y, 16, 16);
+        // ctx.strokeRect(particle.x, particle.y, 16, 16);
     });
 
     move = setTimeout(game, speed);

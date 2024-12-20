@@ -1,6 +1,7 @@
 html {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgb(173, 216, 230);
+    background-image: linear-gradient(#5a007e, #001649);
+    height: 100%;
 }
 
 body {
@@ -8,17 +9,23 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 0px;
+    padding: 0px;   
+}
+
+h1 {
+    color: #32c1ff;
+    font-family: 'QuickSand';
+    font-weight: 450;
+    font-size: 40px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 
 
 canvas {
-    border: 1px solid rgb(128, 156, 156);
-    box-shadow: 
-    0.4px 0.3px 0.4px hsl(var(--shadow-color) / 0.97),
-    1.3px 1.2px 1.3px -1.7px hsl(var(--shadow-color) / 0.73),
-    7.9px 7.5px 8.2px -3.3px hsl(var(--shadow-color) / 0.48),
-    25.7px 24.6px 26.7px -5px hsl(var(--shadow-color) / 0.24);
+    border: 1px solid #8c0082;
 }
 
 .gameover-cont {
