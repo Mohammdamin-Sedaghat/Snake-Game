@@ -11,6 +11,7 @@ let direction;
 let newDir;
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
+document.querySelector('.suck-text').innerHTML = 'Start!';
 
 backgroundImg.addEventListener('load', uploadBackground);
 document.querySelector('.gameover-button').addEventListener('click', ()=>{
@@ -23,9 +24,6 @@ document.querySelector('.gameover-button').addEventListener('click', ()=>{
 function uploadBackground() {
     ctx.clearRect(0,0,500,500);
 
-    // const pattern = ctx.createPattern(backgroundImg, 'repeat');
-    // ctx.fillStyle = pattern;
-    // ctx.fillRect(0,0,500, 500);
     let head = snakeArr || [{x:240,y:240}];
     head = head[head.length -1];
     const radGrad = ctx.createRadialGradient(head.x+8, head.y+8, 10, 240, 240, 360);
@@ -48,6 +46,33 @@ function uploadBackground() {
         ctx.lineTo(480, i*16);
         ctx.stroke();
     }
+
+    if (appleLoc) {
+
+        const appleGrad = ctx.createRadialGradient(appleLoc.x+8, appleLoc.y+8,2,appleLoc.x+8, appleLoc.y+8, 48);
+        appleGrad.addColorStop(0, "rgb(255, 0, 0)");
+        appleGrad.addColorStop(0.6, "rgba(255, 7, 7, 0.29)");
+        appleGrad.addColorStop(1, "rgba(255, 7, 7, 0)");
+        ctx.strokeStyle = appleGrad;
+        ctx.fillStyle = appleGrad;
+
+        ctx.beginPath();
+        ctx.arc(appleLoc.x+8, appleLoc.y+8, 48, 0, Math.PI*2);
+        ctx.fill();
+
+        
+        for (let i= -3; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(appleLoc.x - 3*16, appleLoc.y + i*16);
+            ctx.lineTo(appleLoc.x + 4 * 16, appleLoc.y + i*16);
+            
+            ctx.moveTo(appleLoc.x + i*16, appleLoc.y - 3*16);
+            ctx.lineTo(appleLoc.x + i*16, appleLoc.y + 4*16);
+            ctx.stroke();
+        }
+        
+    }
+    
 
 }
 
@@ -116,6 +141,7 @@ function game() {
     }
     if (touched) {
         document.querySelector('.gameover-cont').style.visibility = 'visible';
+        document.querySelector('.suck-text').innerHTML = 'You Lost!';
         return ;
     }
 
@@ -153,6 +179,7 @@ function game() {
         snakeArr[snakeArr.length - 1].y > 480 - 16 ||
         snakeArr[snakeArr.length - 1].y < 0) {
         document.querySelector('.gameover-cont').style.visibility = 'visible';
+        document.querySelector('.suck-text').innerHTML = 'You Lost!';
         return ;
     }
 
@@ -162,6 +189,7 @@ function game() {
 
     //apples
     ctx.drawImage(apple, appleLoc.x, appleLoc.y);
+
 
     //drawing the snake
     let size = snakeArr.length;
