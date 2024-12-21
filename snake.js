@@ -9,11 +9,13 @@ let speed;
 let appleLoc;
 let direction;
 let newDir;
+let isSetting = false;
+let boxSize = 16;
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
 document.querySelector('.suck-text').innerHTML = 'Start!';
 
-backgroundImg.addEventListener('load', uploadBackground);
+apple.addEventListener('load', uploadBackground);
 document.querySelector('.gameover-button').addEventListener('click', ()=>{
     document.querySelector('.gameover-button').innerHTML = "Game Over";
     document.querySelector('.gameover-cont').style.visibility = 'hidden';
@@ -35,21 +37,25 @@ function uploadBackground() {
     ctx.globalAlpha = 0.2;
     ctx.strokeStyle = radGrad;
     ctx.lineWidth = 2;
-    for (let i=1;i < 30; i++) {
+    for (let i=1;i < (480/boxSize)+1; i++) {
         ctx.beginPath();
-        ctx.moveTo(i*16, 0);
-        ctx.lineTo(i*16,480);
+        ctx.moveTo(i*boxSize, 0);
+        ctx.lineTo(i*boxSize,480);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, 16*i);
-        ctx.lineTo(480, i*16);
+        ctx.moveTo(0, boxSize*i);
+        ctx.lineTo(480, i*boxSize);
         ctx.stroke();
     }
 
     if (appleLoc) {
 
-        const appleGrad = ctx.createRadialGradient(appleLoc.x+8, appleLoc.y+8,2,appleLoc.x+8, appleLoc.y+8, 48);
+        const appleGrad = ctx.createRadialGradient(appleLoc.x+(boxSize/2), 
+                                                    appleLoc.y+(boxSize/2),
+                                                    2,
+                                                    appleLoc.x+(boxSize/2), 
+                                                    appleLoc.y+(boxSize/2), boxSize*3);
         appleGrad.addColorStop(0, "rgb(255, 0, 0)");
         appleGrad.addColorStop(0.6, "rgba(255, 7, 7, 0.29)");
         appleGrad.addColorStop(1, "rgba(255, 7, 7, 0)");
@@ -57,17 +63,17 @@ function uploadBackground() {
         ctx.fillStyle = appleGrad;
 
         ctx.beginPath();
-        ctx.arc(appleLoc.x+8, appleLoc.y+8, 48, 0, Math.PI*2);
+        ctx.arc(appleLoc.x+(boxSize/2), appleLoc.y+(boxSize/2), (boxSize*3), 0, Math.PI*2);
         ctx.fill();
 
         
         for (let i= -3; i < 5; i++) {
             ctx.beginPath();
-            ctx.moveTo(appleLoc.x - 3*16, appleLoc.y + i*16);
-            ctx.lineTo(appleLoc.x + 4 * 16, appleLoc.y + i*16);
+            ctx.moveTo(appleLoc.x - 3*boxSize, appleLoc.y + i*boxSize);
+            ctx.lineTo(appleLoc.x + 4 * boxSize, appleLoc.y + i*boxSize);
             
-            ctx.moveTo(appleLoc.x + i*16, appleLoc.y - 3*16);
-            ctx.lineTo(appleLoc.x + i*16, appleLoc.y + 4*16);
+            ctx.moveTo(appleLoc.x + i*boxSize, appleLoc.y - 3*boxSize);
+            ctx.lineTo(appleLoc.x + i*boxSize, appleLoc.y + 4*boxSize);
             ctx.stroke();
         }
         
@@ -79,21 +85,23 @@ function uploadBackground() {
 //function to start (restart) game
 function startGame() {
     snakeArr = [{
-        x: 48,
-        y: 16 * 14,
+        x: boxSize*3,
+        y: boxSize * Math.round(480 / (2*boxSize)),
     }, {
-        x: 64,
-        y: 16 * 14,
+        x: boxSize*4,
+        y: boxSize * Math.round(480 / (2*boxSize)),
     }, {
-        x: 80,
-        y: 16 * 14, 
+        x: boxSize*5,
+        y: boxSize * Math.round(480 / (2*boxSize)), 
     }, {
-        x: 96,
-        y: 16 * 14,}];
+        x: boxSize*6,
+        y: boxSize * Math.round(480 / (2*boxSize))}];
 
     speed = 100;
 
-    appleLoc = {x: 16 * 18, y: 16*14}
+    appleLoc = {x: boxSize * Math.round((480*1.4) / (2*boxSize)), y: boxSize * Math.round(480 / (2*boxSize))}
+    // apple.height = boxSize;
+    // apple.width = boxSize;
     newDir = undefined;
     direction = '+x';
 
@@ -101,11 +109,11 @@ function startGame() {
     document.addEventListener('keydown', (event)=>{
         if (event.key.toLocaleLowerCase() == 'd') {
             if (direction[1] === 'y') {
-                newDir = '+x'
+                newDir = '+x';
             }
         } else if (event.key.toLocaleLowerCase() == 's') {
             if (direction[1] === 'x') {
-                newDir = '+y'
+                newDir = '+y';
             }
         } else if (event.key.toLocaleLowerCase() == 'a') {
             if (direction[1] === 'y') {
@@ -152,8 +160,8 @@ function game() {
             x: appleLoc.x,
             y: appleLoc.y
         });
-        appleLoc.x = Math.floor(Math.random() * 30) * 16;
-        appleLoc.y = Math.floor(Math.random() * 30) * 16;
+        appleLoc.x = Math.floor(Math.random() * (480 / boxSize)) * boxSize;
+        appleLoc.y = Math.floor(Math.random() * (480 / boxSize)) * boxSize;
     } 
 
     //moving the snake
@@ -161,22 +169,22 @@ function game() {
     let newTail;
     if (direction[1] == "x"){
         newTail = {
-            x: eval(tail.x + direction[0] + 16),
+            x: eval(tail.x + direction[0] + boxSize),
             y: tail.y
         }
     } else if (direction[1] == 'y') {
         newTail = {
             x: tail.x,
-            y: eval(tail.y + direction[0] + 16)
+            y: eval(tail.y + direction[0] + boxSize)
         }
     }
     snakeArr.splice(0, 1);
     snakeArr.push(newTail)
 
     //checking bounderies
-    if (snakeArr[snakeArr.length - 1].x > 480 - 16 || 
+    if (snakeArr[snakeArr.length - 1].x > 480 - boxSize || 
         snakeArr[snakeArr.length - 1].x < 0 ||
-        snakeArr[snakeArr.length - 1].y > 480 - 16 ||
+        snakeArr[snakeArr.length - 1].y > 480 - boxSize ||
         snakeArr[snakeArr.length - 1].y < 0) {
         document.querySelector('.gameover-cont').style.visibility = 'visible';
         document.querySelector('.suck-text').innerHTML = 'You Lost!';
@@ -188,7 +196,7 @@ function game() {
     ctx.globalAlpha = 1;
 
     //apples
-    ctx.drawImage(apple, appleLoc.x, appleLoc.y);
+    ctx.drawImage(apple, appleLoc.x, appleLoc.y, boxSize - 1, boxSize);
 
 
     //drawing the snake
@@ -196,9 +204,51 @@ function game() {
     snakeArr.forEach((particle, i) =>{
         ctx.fillStyle = `rgb(${9+(35*i/size)}, ${9+(210*i/size)}, ${121+(134*i/size)})`;
         ctx.strokeStyle = 'blue';
-        ctx.fillRect(particle.x, particle.y, 16, 16);
-        // ctx.strokeRect(particle.x, particle.y, 16, 16);
+        ctx.fillRect(particle.x, particle.y, boxSize, boxSize);
     });
 
     move = setTimeout(game, speed);
+}
+
+document.querySelector('.setting-button').addEventListener('click', ()=>{
+    if (!isSetting) {
+        document.querySelector('.grandchild').innerHTML = `
+            <div class="suck-text">Settings</div>
+            <div class="background-size-cont">
+                <div>Box Size:</div>
+                <input type="range" min="10" max="48" step="2" value=${boxSize} class="background-size">
+                <div>Obstacles:</div>
+                <label class="obstacles-label">
+                    <input type="checkbox" class="obstacles" checked=${obstAllowed}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        `;
+        insertListeners();
+    } else {
+        document.querySelector('.grandchild').innerHTML = `
+            <div class="suck-text">Start</div>
+            <button class="gameover-button glowbutton">Start Game</button>
+        `;
+        document.querySelector('.gameover-button').addEventListener('click', ()=>{
+            document.querySelector('.gameover-button').innerHTML = "Game Over";
+            document.querySelector('.gameover-cont').style.visibility = 'hidden';
+            startGame();
+        });
+    }
+    isSetting = !isSetting;
+});
+
+let obstAllowed = false;
+
+function insertListeners() {
+    document.querySelector('.slider').addEventListener('click', ()=>{
+        obstAllowed = document.querySelector('.obstacles').checked
+        console.log(obstAllowed);
+    });
+
+    document.querySelector('.background-size').addEventListener('change', ()=>{
+        boxSize = Math.round(480 / (480 / document.querySelector('.background-size').value));
+        uploadBackground();
+    });
 }
