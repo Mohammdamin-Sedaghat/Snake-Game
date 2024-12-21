@@ -5,7 +5,7 @@ const apple = new Image();
 apple.src = './apple.svg';
 let move;
 let snakeArr;
-let speed;
+let speed = 100;
 let appleLoc;
 let direction;
 let newDir;
@@ -96,8 +96,6 @@ function startGame() {
     }, {
         x: boxSize*6,
         y: boxSize * Math.round(480 / (2*boxSize))}];
-
-    speed = 100;
 
     appleLoc = {x: boxSize * Math.round((480*1.4) / (2*boxSize)), y: boxSize * Math.round(480 / (2*boxSize))}
     // apple.height = boxSize;
@@ -222,6 +220,8 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
                     <input type="checkbox" class="obstacles" checked=${obstAllowed}>
                     <span class="slider"></span>
                 </label>
+                <div>Speed Size:</div>
+                <input type="range" min="10" max="200" step="20" value=${speed} class="background-size speed-size">
             </div>
         `;
         insertListeners();
@@ -248,7 +248,15 @@ function insertListeners() {
     });
 
     document.querySelector('.background-size').addEventListener('change', ()=>{
-        boxSize = Math.round(480 / (480 / document.querySelector('.background-size').value));
+        let startSize = document.querySelector('.background-size').value
+        while (480*5 % startSize != 0) {
+            startSize++;
+        }
+        boxSize = startSize;
         uploadBackground();
+    });
+
+    document.querySelector('.speed-size').addEventListener('change', ()=>{
+        speed = 210 - document.querySelector('.speed-size').value;
     });
 }
