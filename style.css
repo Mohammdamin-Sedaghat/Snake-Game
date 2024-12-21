@@ -41,13 +41,18 @@ canvas {
     width: 240px;
     top: 208px;
 
+    box-shadow: 0px 0px 8px rgb(205, 156, 227);
+}
+
+.child {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 50px;
 
-    box-shadow: 0px 0px 8px rgb(205, 156, 227);
+    gap: 50px;
+    height: 240px;
+    width: 240px;
 }
 
 .gameover-cont:hover {
@@ -71,7 +76,6 @@ canvas {
     height: 40px;
 }
 
-/* From Uiverse.io by InfinityLoopGames */ 
 .glowbutton {
     --glow-color: rgb(176, 252, 255);
     --glow-spread-color: rgba(123, 251, 255, 0.781);
@@ -120,4 +124,50 @@ canvas {
     box-shadow: 0 0 0.6em 0.25em var(--glow-color),
       0 0 2.5em 2em var(--glow-spread-color),
       inset 0 0 0.5em 0.25em var(--glow-color);
+}
+
+.setting-button {
+    width: 34px;
+    height: 34px;
+    position: absolute;
+    background-color: rgba(98, 76, 107, 0.786);
+
+    padding: 8px;
+    top: 15px;
+    right: 15px;
+
+    display: flex;
+    justify-self: center;
+    vertical-align: center;
+
+    border-radius: 50%;
+    border: none;
+    
+    transition: all 0.15s, visibility 0s;
+}
+
+.setting-img {
+    width: 18px;
+}
+
+.setting-button:hover {
+    box-shadow: 0px 0px 4px rgb(98, 76, 107);;
+}
+
+.setting-button:active {
+    background-color: rgba(91, 65, 101, 0.786);
+}
+
+.setting-button:hover .setting-img {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+  
+    100% {
+      transform: rotate(360deg);
+    }
 }
