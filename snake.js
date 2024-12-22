@@ -11,6 +11,12 @@ let direction;
 let newDir;
 let isSetting = false;
 let boxSize = 16;
+let obstAllowed = false;
+let obstacleLoc = [
+    {x:boxSize*4,y:boxSize*4},
+    {x:boxSize*16,y:boxSize*10},
+    {x:boxSize*20,y:boxSize*14},
+];
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
 document.querySelector('.suck-text').innerHTML = 'Start!';
@@ -78,6 +84,41 @@ function uploadBackground() {
         }
         
     }
+
+    //drawing obstacles
+    if (obstAllowed) {
+        obstacleLoc.forEach((particle)=>{
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = "rgb(123, 251, 255)";
+            //the circle
+            ctx.beginPath();
+            ctx.moveTo(particle.x+boxSize, particle.y+(boxSize/2));
+            ctx.arc(particle.x+(boxSize/2), particle.y+(boxSize/2), (boxSize/2),0, Math.PI*2);
+            //the cross
+            ctx.moveTo(particle.x+(0.207107*boxSize), particle.y+(0.207107*boxSize));
+            ctx.lineTo(particle.x+boxSize-(0.207107*boxSize), particle.y+boxSize-(0.207107*boxSize))
+            ctx.moveTo(particle.x+boxSize-(0.207107*boxSize), particle.y+(0.207107*boxSize));
+            ctx.lineTo(particle.x+(0.207107*boxSize), particle.y+boxSize-(0.207107*boxSize))
+            ctx.stroke();
+
+            //the glow
+            ctx.globalAlpha = 0.4;
+            const obstGrad = ctx.createRadialGradient(particle.x+(boxSize/2), 
+                                                    particle.y+(boxSize/2),
+                                                    2,
+                                                    particle.x+(boxSize/2), 
+                                                    particle.y+(boxSize/2), boxSize*3);
+            obstGrad.addColorStop(0, "rgb(32, 248, 255)");
+            obstGrad.addColorStop(0.6, "rgba(123, 251, 255, 0.64)");
+            obstGrad.addColorStop(1, "rgba(0, 120, 124, 0.08)");
+            ctx.strokeStyle = obstGrad;
+            ctx.fillStyle = obstGrad;
+
+            ctx.beginPath();
+            ctx.arc(particle.x+(boxSize/2), particle.y+(boxSize/2), (boxSize*3), 0, Math.PI*2);
+            ctx.fill();
+        });
+    }
     
 
 }
@@ -98,8 +139,6 @@ function startGame() {
         y: boxSize * Math.round(480 / (2*boxSize))}];
 
     appleLoc = {x: boxSize * Math.round((480*1.4) / (2*boxSize)), y: boxSize * Math.round(480 / (2*boxSize))}
-    // apple.height = boxSize;
-    // apple.width = boxSize;
     newDir = undefined;
     direction = '+x';
 
@@ -130,6 +169,21 @@ function startGame() {
     game();
 }
 
+function loseState() {
+    document.querySelector('.gameover-cont').style.visibility = 'visible';
+    document.querySelector('.suck-text').innerHTML = 'You Lost!';
+
+    if (obstAllowed) {
+        obstacleLoc = [];
+        for(let i = 0; i < (Math.random()*20)+3; i++) {
+            obstacleLoc.push({
+                x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
+                y: boxSize*Math.floor(Math.random()*(480 / boxSize))
+            });
+        }
+    }
+}
+
 function game() {
     direction = newDir || direction
     //checking if the snake has crashed
@@ -146,8 +200,16 @@ function game() {
         }
     }
     if (touched) {
-        document.querySelector('.gameover-cont').style.visibility = 'visible';
-        document.querySelector('.suck-text').innerHTML = 'You Lost!';
+        loseState();
+        return ;
+    }
+    obstacleLoc.forEach((obst)=>{
+        if (obst.x === last.x && obst.y === last.y) {
+            touched = true;
+        }
+    });
+    if (touched) {
+        loseState();
         return ;
     }
 
@@ -217,11 +279,11 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
                 <input type="range" min="10" max="48" step="2" value=${boxSize} class="background-size">
                 <div>Obstacles:</div>
                 <label class="obstacles-label">
-                    <input type="checkbox" class="obstacles" checked=${obstAllowed}>
+                    <input type="checkbox" class="obstacles" ${obstAllowed ? "checked" : ""}>
                     <span class="slider"></span>
                 </label>
                 <div>Speed Size:</div>
-                <input type="range" min="10" max="200" step="20" value=${speed} class="background-size speed-size">
+                <input type="range" min="10" max="200" step="20" value=${210 - speed} class="background-size speed-size">
             </div>
         `;
         insertListeners();
@@ -239,12 +301,19 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
     isSetting = !isSetting;
 });
 
-let obstAllowed = false;
-
 function insertListeners() {
-    document.querySelector('.slider').addEventListener('click', ()=>{
-        obstAllowed = document.querySelector('.obstacles').checked
-        console.log(obstAllowed);
+    document.querySelector('.obstacles').addEventListener('change', ()=>{
+        obstAllowed = document.querySelector('.obstacles').checked;
+        obstacleLoc = [];
+        if (obstAllowed) {
+            for(let i = 0; i < (Math.random()*20)+3; i++) {
+                obstacleLoc.push({
+                    x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
+                    y: boxSize*Math.floor(Math.random()*(480 / boxSize))
+                });
+            }
+        }
+        uploadBackground();
     });
 
     document.querySelector('.background-size').addEventListener('change', ()=>{
@@ -252,7 +321,16 @@ function insertListeners() {
         while (480*5 % startSize != 0) {
             startSize++;
         }
-        boxSize = startSize;
+        boxSize = Number(startSize);
+        if (obstAllowed) {
+            obstacleLoc = [];
+            for(let i = 0; i < (Math.random()*20)+3; i++) {
+                obstacleLoc.push({
+                    x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
+                    y: boxSize*Math.floor(Math.random()*(480 / boxSize))
+                });
+            }
+        }
         uploadBackground();
     });
 
