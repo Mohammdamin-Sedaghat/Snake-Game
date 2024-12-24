@@ -50,7 +50,7 @@ canvas {
     align-items: center;
     flex-direction: column;
 
-    gap: 50px;
+    gap: 40px;
     height: 240px;
     width: 240px;
 }
@@ -126,7 +126,7 @@ canvas {
       inset 0 0 0.5em 0.25em var(--glow-color);
 }
 
-.setting-button {
+.setting-button, .leaderboard-button {
     width: 34px;
     height: 34px;
     position: absolute;
@@ -146,15 +146,19 @@ canvas {
     transition: all 0.15s, visibility 0s;
 }
 
-.setting-img {
+.leaderboard-button {
+    right: 55px;
+}
+
+.setting-img, .leaderboard-img {
     width: 18px;
 }
 
-.setting-button:hover {
-    box-shadow: 0px 0px 4px rgb(98, 76, 107);;
+.setting-button:hover, .leaderboard-button:hover {
+    box-shadow: 0px 0px 4px rgb(98, 76, 107);
 }
 
-.setting-button:active {
+.setting-button:active, .leaderboard-button:active {
     background-color: rgba(91, 65, 101, 0.786);
 }
 
@@ -240,6 +244,10 @@ canvas {
     background-color: #5a007e;
 }
 
+/* .slider:hover {
+    box-shadow: 0px 0px 3px rgba(209, 144, 237, 0.718);
+} */
+
 .slider::before {
     content: "";
     position: absolute;
@@ -263,4 +271,32 @@ canvas {
 
 .obstacles:checked ~ .slider {
     background-color: rgb(0, 251, 255);
+}
+
+.leader-option {
+    display: flex;
+    background-color: rgba(130, 196, 198, 0.785);
+    padding: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 8px;
+
+    --glow-color: rgb(176, 252, 255);
+    box-shadow: 0 0 0.5em var(--glow-color);
+    color: rgb(170, 255, 255);
+}
+
+.leader-option:hover {
+    background-color: rgba(116, 192, 195, 0.785);
+}
+
+.leader-option-cont {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    width: 70%;
 }

@@ -12,11 +12,13 @@ let newDir;
 let isSetting = false;
 let boxSize = 16;
 let obstAllowed = false;
-let obstacleLoc = [
-    {x:boxSize*4,y:boxSize*4},
-    {x:boxSize*16,y:boxSize*10},
-    {x:boxSize*20,y:boxSize*14},
-];
+let obstacleLoc = [];
+let isLeader = false;
+let leaders = [
+    {names:"p1", score:21},
+    {names:"p2", score:18},
+    {names:"p3", score:15},
+]
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
 document.querySelector('.suck-text').innerHTML = 'Start!';
@@ -299,6 +301,41 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
         });
     }
     isSetting = !isSetting;
+    isLeader = false;
+});
+
+document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
+    if (!isLeader) {
+        let totalHTML = ""
+        totalHTML += `
+            <div class="suck-text">Leaderboard</div>
+            <div class="leader-option-cont">
+        `
+        leaders.forEach((leader)=>{
+            totalHTML += `
+                <div class='leader-option'>
+                    <div>${leader.names}</div>
+                    <div>${leader.score}</div>
+                </div>
+            `
+        });
+        totalHTML += "</div>";
+        document.querySelector('.grandchild').innerHTML = totalHTML;
+        isLeader = !isLeader;
+        isSetting = false;
+    } else {
+        document.querySelector('.grandchild').innerHTML = `
+            <div class="suck-text">Start</div>
+            <button class="gameover-button glowbutton">Start Game</button>
+        `;
+        document.querySelector('.gameover-button').addEventListener('click', ()=>{
+            document.querySelector('.gameover-button').innerHTML = "Game Over";
+            document.querySelector('.gameover-cont').style.visibility = 'hidden';
+            startGame();
+        });
+        isLeader = !isLeader;
+        isSetting = false;
+    }
 });
 
 function insertListeners() {
