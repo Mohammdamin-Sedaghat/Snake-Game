@@ -300,3 +300,21 @@ canvas {
     gap: 15px;
     width: 70%;
 }
+
+.question-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.question-text {
+    --glow-color: rgb(176, 252, 255);
+    text-shadow: 0 0 0.5em var(--glow-color);
+    color: rgb(170, 255, 255);
+}
+
+.question-input {
+    padding: 5px;
+    border-radius: 2px;
+    border: none;
+}

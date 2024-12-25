@@ -14,10 +14,10 @@ let boxSize = 16;
 let obstAllowed = false;
 let obstacleLoc = [];
 let isLeader = false;
-let leaders = [
-    {names:"p1", score:21},
-    {names:"p2", score:18},
-    {names:"p3", score:15},
+let leaders = JSON.parse(localStorage.getItem('leaders')) || [
+    {names:"Not Set", score:0},
+    {names:"Not Set", score:0},
+    {names:"Not Set", score:0},
 ]
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
@@ -173,7 +173,44 @@ function startGame() {
 
 function loseState() {
     document.querySelector('.gameover-cont').style.visibility = 'visible';
-    document.querySelector('.suck-text').innerHTML = 'You Lost!';
+
+    if (snakeArr.length > leaders[2].score) {
+        document.querySelector('.grandchild').innerHTML = `
+            <div class="suck-text" style="font-size:15px;text-align:center;">
+                Seems like you made it to leaderboard!
+            </div>
+            <div class="question-cont">
+                <div class="question-text">Whats your name?</div>
+                <input placeholder="name..." class="question-input">
+            </div>
+        `; 
+        document.querySelector('.question-input').addEventListener('keydown', (event)=>{
+            if (event.key === 'Enter') {
+                dudeName = document.querySelector('.question-input').value;
+                if (snakeArr.length > leaders[0].score) {
+                    leaders.splice(0, 0, {names:dudeName, score: snakeArr.length});
+                    leaders.pop();
+                } else if (snakeArr.length > leaders[1].score) {
+                    leaders.splice(1, 0, {names:dudeName, score: snakeArr.length});
+                    leaders.pop();
+                } else {
+                    leaders.splice(2, 0, {names:dudeName, score: snakeArr.length});
+                    leaders.pop();
+                }
+                localStorage.setItem('leaders', JSON.stringify(leaders));
+
+                document.querySelector('.grandchild').innerHTML = `
+                    <div class="suck-text">You Lost!</div>
+                    <button class="gameover-button glowbutton">Game Over</button>
+                `;
+                document.querySelector('.gameover-button').addEventListener('click', ()=>{
+                    document.querySelector('.gameover-button').innerHTML = "Game Over";
+                    document.querySelector('.gameover-cont').style.visibility = 'hidden';
+                    startGame();
+                });
+            }
+        });
+    }
 
     if (obstAllowed) {
         obstacleLoc = [];
@@ -248,8 +285,7 @@ function game() {
         snakeArr[snakeArr.length - 1].x < 0 ||
         snakeArr[snakeArr.length - 1].y > 480 - boxSize ||
         snakeArr[snakeArr.length - 1].y < 0) {
-        document.querySelector('.gameover-cont').style.visibility = 'visible';
-        document.querySelector('.suck-text').innerHTML = 'You Lost!';
+        loseState();
         return ;
     }
 
