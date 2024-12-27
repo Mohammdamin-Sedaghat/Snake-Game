@@ -1,0 +1,134 @@
+
+/* gameOver container */
+.gameover-cont {
+    position: absolute;
+    background-color: rgba(155, 120, 170, 0.578);
+    border-radius: 15px;
+
+    height: 240px;
+    width: 240px;
+    top: 208px;
+
+    box-shadow: 0px 0px 8px rgb(205, 156, 227);
+}
+
+.gameover-cont:hover {
+    box-shadow: 0px 0px 15px rgb(233, 184, 255);
+}
+
+.grandchild, .child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    gap: 40px;
+    height: 240px;
+    width: 240px;
+}
+
+/* shinning blue texts */
+.suck-text {
+    font-family: 'QuickSand';
+    font-weight: 800;
+    font-size: 25px;
+
+    --glow-color: rgb(176, 252, 255);
+    color: var(--glow-color);
+    text-shadow: 0 0 0.5em var(--glow-color);
+}
+
+/* the gameover button */
+.gameover-button {
+    font-family: 'QuickSand';
+
+    width: 150px;
+    height: 40px;
+}
+
+.glowbutton {
+    --glow-color: rgb(176, 252, 255);
+    --glow-spread-color: rgba(123, 251, 255, 0.781);
+    --enhanced-glow-color: rgb(206, 255, 255);
+    --btn-color: rgb(61, 127, 136);
+    border: 0.25em solid var(--glow-color);
+    padding: 0.5em 3em;
+    color: var(--glow-color);
+    font-size: 12px;
+    font-weight: bold;
+    background-color: var(--btn-color);
+    border-radius: 1em;
+    outline: none;
+    box-shadow: 0 0 1em 0.25em var(--glow-color),
+      0 0 4em 1em var(--glow-spread-color),
+      inset 0 0 0.75em 0.25em var(--glow-color);
+    text-shadow: 0 0 0.5em var(--glow-color);
+    position: relative;
+    transition: all 0.3s;
+    transition: visibility 0s;
+}
+  
+.glowbutton:hover {
+    color: var(--btn-color);
+    background-color: var(--glow-color);
+    box-shadow: 0 0 1em 0.25em var(--glow-color),
+      0 0 4em 2em var(--glow-spread-color),
+      inset 0 0 0.75em 0.25em var(--glow-color);
+}
+  
+.glowbutton:active {
+    box-shadow: 0 0 0.6em 0.25em var(--glow-color),
+      0 0 2.5em 2em var(--glow-spread-color),
+      inset 0 0 0.5em 0.25em var(--glow-color);
+}
+
+/* setting and leaderboard buttons */
+.setting-button, .leaderboard-button {
+    width: 34px;
+    height: 34px;
+    position: absolute;
+    background-color: rgba(98, 76, 107, 0.786);
+
+    padding: 8px;
+    top: 15px;
+    right: 15px;
+
+    display: flex;
+    justify-self: center;
+    vertical-align: center;
+
+    border-radius: 50%;
+    border: none;
+    
+    transition: all 0.15s, visibility 0s;
+}
+
+.leaderboard-button {
+    right: 55px;
+}
+
+.setting-img, .leaderboard-img {
+    width: 18px;
+}
+
+.setting-button:hover, .leaderboard-button:hover {
+    box-shadow: 0px 0px 4px rgb(98, 76, 107);
+}
+
+.setting-button:active, .leaderboard-button:active {
+    background-color: rgba(91, 65, 101, 0.786);
+}
+
+.setting-button:hover .setting-img {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+  
+    100% {
+      transform: rotate(360deg);
+    }
+}

@@ -1,8 +1,8 @@
 const ctx = document.querySelector('canvas').getContext('2d');
 const backgroundImg = new Image();
-backgroundImg.src = './boxes.svg';
+backgroundImg.src = './images/boxes.svg';
 const apple = new Image();
-apple.src = './apple.svg';
+apple.src = './images/apple.svg';
 let move;
 let snakeArr;
 let speed = 100;

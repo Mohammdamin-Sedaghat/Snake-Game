@@ -1,0 +1,49 @@
+/* The Leaderboard itself */
+.leader-option-cont {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    width: 70%;
+}
+
+/* Individual boxes for each winner */
+.leader-option {
+    display: flex;
+    background-color: rgba(130, 196, 198, 0.785);
+    padding: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 8px;
+
+    --glow-color: rgb(176, 252, 255);
+    box-shadow: 0 0 0.5em var(--glow-color);
+    color: rgb(170, 255, 255);
+}
+
+.leader-option:hover {
+    background-color: rgba(116, 192, 195, 0.785);
+}
+
+/* The question asking part */
+
+.question-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.question-text {
+    --glow-color: rgb(176, 252, 255);
+    text-shadow: 0 0 0.5em var(--glow-color);
+    color: rgb(170, 255, 255);
+}
+
+.question-input {
+    padding: 5px;
+    border-radius: 2px;
+    border: none;
+}
