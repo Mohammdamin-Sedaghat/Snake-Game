@@ -15,3 +15,8 @@ export let leaders = JSON.parse(localStorage.getItem('leaders')) || [
     {names:"Not Set", score:0},
     {names:"Not Set", score:0},
 ]
+export const ctx = document.querySelector('canvas').getContext('2d');
+export const backgroundImg = new Image();
+backgroundImg.src = './images/boxes.svg';
+export const apple = new Image();
+apple.src = './images/apple.svg';
