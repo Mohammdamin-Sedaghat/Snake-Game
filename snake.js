@@ -3,38 +3,22 @@ const backgroundImg = new Image();
 backgroundImg.src = './images/boxes.svg';
 const apple = new Image();
 apple.src = './images/apple.svg';
-let move;
-let snakeArr;
-let speed = 100;
-let appleLoc;
-let direction;
-let newDir;
+import { leaders, currState, gameState } from "./variables.js";
+
 let isSetting = false;
-let boxSize = 16;
-let obstAllowed = false;
-let obstacleLoc = [];
 let isLeader = false;
-let leaders = JSON.parse(localStorage.getItem('leaders')) || [
-    {names:"Not Set", score:0},
-    {names:"Not Set", score:0},
-    {names:"Not Set", score:0},
-]
 
 document.querySelector('.gameover-button').innerHTML = "Start Game";
 document.querySelector('.suck-text').innerHTML = 'Start!';
 
 apple.addEventListener('load', uploadBackground);
-document.querySelector('.gameover-button').addEventListener('click', ()=>{
-    document.querySelector('.gameover-button').innerHTML = "Game Over";
-    document.querySelector('.gameover-cont').style.visibility = 'hidden';
-    startGame();
-});
+gameOverListener()
 
 //function to make background
 function uploadBackground() {
     ctx.clearRect(0,0,500,500);
 
-    let head = snakeArr || [{x:240,y:240}];
+    let head = currState.snakeArr.length === 0 ? [{x:240,y:240}]: currState.snakeArr;
     head = head[head.length -1];
     const radGrad = ctx.createRadialGradient(head.x+8, head.y+8, 10, 240, 240, 360);
     radGrad.addColorStop(0, "#ffff00");
@@ -45,25 +29,24 @@ function uploadBackground() {
     ctx.globalAlpha = 0.2;
     ctx.strokeStyle = radGrad;
     ctx.lineWidth = 2;
-    for (let i=1;i < (480/boxSize)+1; i++) {
+    for (let i=1;i < (480/gameState.boxSize)+1; i++) {
         ctx.beginPath();
-        ctx.moveTo(i*boxSize, 0);
-        ctx.lineTo(i*boxSize,480);
+        ctx.moveTo(i*gameState.boxSize, 0);
+        ctx.lineTo(i*gameState.boxSize,480);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, boxSize*i);
-        ctx.lineTo(480, i*boxSize);
+        ctx.moveTo(0, gameState.boxSize*i);
+        ctx.lineTo(480, i*gameState.boxSize);
         ctx.stroke();
     }
 
-    if (appleLoc) {
-
-        const appleGrad = ctx.createRadialGradient(appleLoc.x+(boxSize/2), 
-                                                    appleLoc.y+(boxSize/2),
+    if (gameState.appleLoc.length !== 0) {
+        const appleGrad = ctx.createRadialGradient(gameState.appleLoc.x+(gameState.boxSize/2), 
+                                                    gameState.appleLoc.y+(gameState.boxSize/2),
                                                     2,
-                                                    appleLoc.x+(boxSize/2), 
-                                                    appleLoc.y+(boxSize/2), boxSize*3);
+                                                    gameState.appleLoc.x+(gameState.boxSize/2), 
+                                                    gameState.appleLoc.y+(gameState.boxSize/2), gameState.boxSize*3);
         appleGrad.addColorStop(0, "rgb(255, 0, 0)");
         appleGrad.addColorStop(0.6, "rgba(255, 7, 7, 0.29)");
         appleGrad.addColorStop(1, "rgba(255, 7, 7, 0)");
@@ -71,45 +54,45 @@ function uploadBackground() {
         ctx.fillStyle = appleGrad;
 
         ctx.beginPath();
-        ctx.arc(appleLoc.x+(boxSize/2), appleLoc.y+(boxSize/2), (boxSize*3), 0, Math.PI*2);
+        ctx.arc(gameState.appleLoc.x+(gameState.boxSize/2), gameState.appleLoc.y+(gameState.boxSize/2), (gameState.boxSize*3), 0, Math.PI*2);
         ctx.fill();
 
         
         for (let i= -3; i < 5; i++) {
             ctx.beginPath();
-            ctx.moveTo(appleLoc.x - 3*boxSize, appleLoc.y + i*boxSize);
-            ctx.lineTo(appleLoc.x + 4 * boxSize, appleLoc.y + i*boxSize);
+            ctx.moveTo(gameState.appleLoc.x - 3*gameState.boxSize, gameState.appleLoc.y + i*gameState.boxSize);
+            ctx.lineTo(gameState.appleLoc.x + 4 * gameState.boxSize, gameState.appleLoc.y + i*gameState.boxSize);
             
-            ctx.moveTo(appleLoc.x + i*boxSize, appleLoc.y - 3*boxSize);
-            ctx.lineTo(appleLoc.x + i*boxSize, appleLoc.y + 4*boxSize);
+            ctx.moveTo(gameState.appleLoc.x + i*gameState.boxSize, gameState.appleLoc.y - 3*gameState.boxSize);
+            ctx.lineTo(gameState.appleLoc.x + i*gameState.boxSize, gameState.appleLoc.y + 4*gameState.boxSize);
             ctx.stroke();
         }
         
     }
 
     //drawing obstacles
-    if (obstAllowed) {
-        obstacleLoc.forEach((particle)=>{
+    if (gameState.obstAllowed) {
+        gameState.obstacleLoc.forEach((particle)=>{
             ctx.globalAlpha = 1;
             ctx.strokeStyle = "rgb(123, 251, 255)";
             //the circle
             ctx.beginPath();
-            ctx.moveTo(particle.x+boxSize, particle.y+(boxSize/2));
-            ctx.arc(particle.x+(boxSize/2), particle.y+(boxSize/2), (boxSize/2),0, Math.PI*2);
+            ctx.moveTo(particle.x+gameState.boxSize, particle.y+(gameState.boxSize/2));
+            ctx.arc(particle.x+(gameState.boxSize/2), particle.y+(gameState.boxSize/2), (gameState.boxSize/2),0, Math.PI*2);
             //the cross
-            ctx.moveTo(particle.x+(0.207107*boxSize), particle.y+(0.207107*boxSize));
-            ctx.lineTo(particle.x+boxSize-(0.207107*boxSize), particle.y+boxSize-(0.207107*boxSize))
-            ctx.moveTo(particle.x+boxSize-(0.207107*boxSize), particle.y+(0.207107*boxSize));
-            ctx.lineTo(particle.x+(0.207107*boxSize), particle.y+boxSize-(0.207107*boxSize))
+            ctx.moveTo(particle.x+(0.207107*gameState.boxSize), particle.y+(0.207107*gameState.boxSize));
+            ctx.lineTo(particle.x+gameState.boxSize-(0.207107*gameState.boxSize), particle.y+gameState.boxSize-(0.207107*gameState.boxSize))
+            ctx.moveTo(particle.x+gameState.boxSize-(0.207107*gameState.boxSize), particle.y+(0.207107*gameState.boxSize));
+            ctx.lineTo(particle.x+(0.207107*gameState.boxSize), particle.y+gameState.boxSize-(0.207107*gameState.boxSize))
             ctx.stroke();
 
             //the glow
             ctx.globalAlpha = 0.4;
-            const obstGrad = ctx.createRadialGradient(particle.x+(boxSize/2), 
-                                                    particle.y+(boxSize/2),
+            const obstGrad = ctx.createRadialGradient(particle.x+(gameState.boxSize/2), 
+                                                    particle.y+(gameState.boxSize/2),
                                                     2,
-                                                    particle.x+(boxSize/2), 
-                                                    particle.y+(boxSize/2), boxSize*3);
+                                                    particle.x+(gameState.boxSize/2), 
+                                                    particle.y+(gameState.boxSize/2), gameState.boxSize*3);
             obstGrad.addColorStop(0, "rgb(32, 248, 255)");
             obstGrad.addColorStop(0.6, "rgba(123, 251, 255, 0.64)");
             obstGrad.addColorStop(1, "rgba(0, 120, 124, 0.08)");
@@ -117,7 +100,7 @@ function uploadBackground() {
             ctx.fillStyle = obstGrad;
 
             ctx.beginPath();
-            ctx.arc(particle.x+(boxSize/2), particle.y+(boxSize/2), (boxSize*3), 0, Math.PI*2);
+            ctx.arc(particle.x+(gameState.boxSize/2), particle.y+(gameState.boxSize/2), (gameState.boxSize*3), 0, Math.PI*2);
             ctx.fill();
         });
     }
@@ -127,44 +110,41 @@ function uploadBackground() {
 
 //function to start (restart) game
 function startGame() {
-    snakeArr = [{
-        x: boxSize*3,
-        y: boxSize * Math.round(480 / (2*boxSize)),
+    currState.snakeArr = [{
+        x: gameState.boxSize*3,
+        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)),
     }, {
-        x: boxSize*4,
-        y: boxSize * Math.round(480 / (2*boxSize)),
+        x: gameState.boxSize*4,
+        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)),
     }, {
-        x: boxSize*5,
-        y: boxSize * Math.round(480 / (2*boxSize)), 
+        x: gameState.boxSize*5,
+        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)), 
     }, {
-        x: boxSize*6,
-        y: boxSize * Math.round(480 / (2*boxSize))}];
+        x: gameState.boxSize*6,
+        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize))}];
 
-    appleLoc = {x: boxSize * Math.round((480*1.4) / (2*boxSize)), y: boxSize * Math.round(480 / (2*boxSize))}
-    newDir = undefined;
-    direction = '+x';
+    gameState.appleLoc = {x: gameState.boxSize * Math.round((480*1.4) / (2*gameState.boxSize)), y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize))}
+    currState.newDir = undefined;
+    currState.direction = '+x';
 
     //adding user intervension
     document.addEventListener('keydown', (event)=>{
         if (event.key.toLocaleLowerCase() == 'd') {
-            if (direction[1] === 'y') {
-                newDir = '+x';
+            if (currState.direction[1] === 'y') {
+                currState.newDir = '+x';
             }
         } else if (event.key.toLocaleLowerCase() == 's') {
-            if (direction[1] === 'x') {
-                newDir = '+y';
+            if (currState.direction[1] === 'x') {
+                currState.newDir = '+y';
             }
         } else if (event.key.toLocaleLowerCase() == 'a') {
-            if (direction[1] === 'y') {
-                newDir = '-x'
+            if (currState.direction[1] === 'y') {
+                currState.newDir = '-x'
             }
         } else if (event.key.toLocaleLowerCase() == 'w') {
-            if (direction[1] === 'x') {
-                newDir = '-y'
+            if (currState.direction[1] === 'x') {
+                currState.newDir = '-y'
             }
-        } else if (event.key == ' ') {
-            console.log('rawr')
-            clearTimeout(move)
         }
     });
 
@@ -174,7 +154,7 @@ function startGame() {
 function loseState() {
     document.querySelector('.gameover-cont').style.visibility = 'visible';
 
-    if (snakeArr.length > leaders[2].score) {
+    if (currState.snakeArr.length > leaders[2].score) {
         document.querySelector('.grandchild').innerHTML = `
             <div class="suck-text" style="font-size:15px;text-align:center;">
                 Seems like you made it to leaderboard!
@@ -187,14 +167,14 @@ function loseState() {
         document.querySelector('.question-input').addEventListener('keydown', (event)=>{
             if (event.key === 'Enter') {
                 dudeName = document.querySelector('.question-input').value;
-                if (snakeArr.length > leaders[0].score) {
-                    leaders.splice(0, 0, {names:dudeName, score: snakeArr.length});
+                if (currState.snakeArr.length > leaders[0].score) {
+                    leaders.splice(0, 0, {names:dudeName, score: currState.snakeArr.length});
                     leaders.pop();
-                } else if (snakeArr.length > leaders[1].score) {
-                    leaders.splice(1, 0, {names:dudeName, score: snakeArr.length});
+                } else if (currState.snakeArr.length > leaders[1].score) {
+                    leaders.splice(1, 0, {names:dudeName, score: currState.snakeArr.length});
                     leaders.pop();
                 } else {
-                    leaders.splice(2, 0, {names:dudeName, score: snakeArr.length});
+                    leaders.splice(2, 0, {names:dudeName, score: currState.snakeArr.length});
                     leaders.pop();
                 }
                 localStorage.setItem('leaders', JSON.stringify(leaders));
@@ -203,37 +183,25 @@ function loseState() {
                     <div class="suck-text">You Lost!</div>
                     <button class="gameover-button glowbutton">Game Over</button>
                 `;
-                document.querySelector('.gameover-button').addEventListener('click', ()=>{
-                    document.querySelector('.gameover-button').innerHTML = "Game Over";
-                    document.querySelector('.gameover-cont').style.visibility = 'hidden';
-                    startGame();
-                });
+                gameOverListener()
             }
         });
     }
 
-    if (obstAllowed) {
-        obstacleLoc = [];
-        for(let i = 0; i < (Math.random()*20)+3; i++) {
-            obstacleLoc.push({
-                x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
-                y: boxSize*Math.floor(Math.random()*(480 / boxSize))
-            });
-        }
-    }
+    generateObstacles();
 }
 
 function game() {
-    direction = newDir || direction
+    currState.direction = currState.newDir || currState.direction
     //checking if the snake has crashed
     let touched = false;
-    let last = snakeArr[snakeArr.length - 1];
-    for (let i = 0; i < snakeArr.length; i++) {
-        if (i === snakeArr.length -1) {
+    let last = currState.snakeArr[currState.snakeArr.length - 1];
+    for (let i = 0; i < currState.snakeArr.length; i++) {
+        if (i === currState.snakeArr.length -1) {
             break;
         } 
-        if (snakeArr[i].x === last.x && 
-            snakeArr[i].y === last.y) {
+        if (currState.snakeArr[i].x === last.x && 
+            currState.snakeArr[i].y === last.y) {
             touched = true;
             break;
         }
@@ -242,7 +210,7 @@ function game() {
         loseState();
         return ;
     }
-    obstacleLoc.forEach((obst)=>{
+    gameState.obstacleLoc.forEach((obst)=>{
         if (obst.x === last.x && obst.y === last.y) {
             touched = true;
         }
@@ -253,38 +221,38 @@ function game() {
     }
 
     //checking if the snake ate apples
-    if (snakeArr[snakeArr.length - 1].x === appleLoc.x &&
-        snakeArr[snakeArr.length - 1].y === appleLoc.y) {
-        snakeArr.push({
-            x: appleLoc.x,
-            y: appleLoc.y
+    if (currState.snakeArr[currState.snakeArr.length - 1].x === gameState.appleLoc.x &&
+        currState.snakeArr[currState.snakeArr.length - 1].y === gameState.appleLoc.y) {
+        currState.snakeArr.push({
+            x: gameState.appleLoc.x,
+            y: gameState.appleLoc.y
         });
-        appleLoc.x = Math.floor(Math.random() * (480 / boxSize)) * boxSize;
-        appleLoc.y = Math.floor(Math.random() * (480 / boxSize)) * boxSize;
+        gameState.appleLoc.x = Math.floor(Math.random() * (480 / gameState.boxSize)) * gameState.boxSize;
+        gameState.appleLoc.y = Math.floor(Math.random() * (480 / gameState.boxSize)) * gameState.boxSize;
     } 
 
     //moving the snake
-    const tail = snakeArr[snakeArr.length - 1];
+    const tail = currState.snakeArr[currState.snakeArr.length - 1];
     let newTail;
-    if (direction[1] == "x"){
+    if (currState.direction[1] == "x"){
         newTail = {
-            x: eval(tail.x + direction[0] + boxSize),
+            x: eval(tail.x + currState.direction[0] + gameState.boxSize),
             y: tail.y
         }
-    } else if (direction[1] == 'y') {
+    } else if (currState.direction[1] == 'y') {
         newTail = {
             x: tail.x,
-            y: eval(tail.y + direction[0] + boxSize)
+            y: eval(tail.y + currState.direction[0] + gameState.boxSize)
         }
     }
-    snakeArr.splice(0, 1);
-    snakeArr.push(newTail)
+    currState.snakeArr.splice(0, 1);
+    currState.snakeArr.push(newTail);
 
     //checking bounderies
-    if (snakeArr[snakeArr.length - 1].x > 480 - boxSize || 
-        snakeArr[snakeArr.length - 1].x < 0 ||
-        snakeArr[snakeArr.length - 1].y > 480 - boxSize ||
-        snakeArr[snakeArr.length - 1].y < 0) {
+    if (currState.snakeArr[currState.snakeArr.length - 1].x > 480 - gameState.boxSize || 
+        currState.snakeArr[currState.snakeArr.length - 1].x < 0 ||
+        currState.snakeArr[currState.snakeArr.length - 1].y > 480 - gameState.boxSize ||
+        currState.snakeArr[currState.snakeArr.length - 1].y < 0) {
         loseState();
         return ;
     }
@@ -294,18 +262,18 @@ function game() {
     ctx.globalAlpha = 1;
 
     //apples
-    ctx.drawImage(apple, appleLoc.x, appleLoc.y, boxSize - 1, boxSize);
+    ctx.drawImage(apple, gameState.appleLoc.x, gameState.appleLoc.y, gameState.boxSize - 1, gameState.boxSize);
 
 
     //drawing the snake
-    let size = snakeArr.length;
-    snakeArr.forEach((particle, i) =>{
+    let size = currState.snakeArr.length;
+    currState.snakeArr.forEach((particle, i) =>{
         ctx.fillStyle = `rgb(${9+(35*i/size)}, ${9+(210*i/size)}, ${121+(134*i/size)})`;
         ctx.strokeStyle = 'blue';
-        ctx.fillRect(particle.x, particle.y, boxSize, boxSize);
+        ctx.fillRect(particle.x, particle.y, gameState.boxSize, gameState.boxSize);
     });
 
-    move = setTimeout(game, speed);
+    setTimeout(game, gameState.speed);
 }
 
 document.querySelector('.setting-button').addEventListener('click', ()=>{
@@ -314,27 +282,23 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
             <div class="suck-text">Settings</div>
             <div class="background-size-cont">
                 <div>Box Size:</div>
-                <input type="range" min="10" max="48" step="2" value=${boxSize} class="background-size">
+                <input type="range" min="10" max="48" step="2" value=${gameState.boxSize} class="background-size">
                 <div>Obstacles:</div>
                 <label class="obstacles-label">
-                    <input type="checkbox" class="obstacles" ${obstAllowed ? "checked" : ""}>
+                    <input type="checkbox" class="obstacles" ${gameState.obstAllowed ? "checked" : ""}>
                     <span class="slider"></span>
                 </label>
-                <div>Speed Size:</div>
-                <input type="range" min="10" max="200" step="20" value=${210 - speed} class="background-size speed-size">
+                <div>Speed:</div>
+                <input type="range" min="10" max="200" step="20" value=${210 - gameState.speed} class="background-size speed-size">
             </div>
         `;
-        insertListeners();
+        settingListeners();
     } else {
         document.querySelector('.grandchild').innerHTML = `
             <div class="suck-text">Start</div>
             <button class="gameover-button glowbutton">Start Game</button>
         `;
-        document.querySelector('.gameover-button').addEventListener('click', ()=>{
-            document.querySelector('.gameover-button').innerHTML = "Game Over";
-            document.querySelector('.gameover-cont').style.visibility = 'hidden';
-            startGame();
-        });
+        gameOverListener();
     }
     isSetting = !isSetting;
     isLeader = false;
@@ -364,28 +328,25 @@ document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
             <div class="suck-text">Start</div>
             <button class="gameover-button glowbutton">Start Game</button>
         `;
-        document.querySelector('.gameover-button').addEventListener('click', ()=>{
-            document.querySelector('.gameover-button').innerHTML = "Game Over";
-            document.querySelector('.gameover-cont').style.visibility = 'hidden';
-            startGame();
-        });
+        gameOverListener();
         isLeader = !isLeader;
         isSetting = false;
     }
 });
 
-function insertListeners() {
+function gameOverListener() {
+    document.querySelector('.gameover-button').addEventListener('click', ()=>{
+        document.querySelector('.gameover-button').innerHTML = "Game Over";
+        document.querySelector('.gameover-cont').style.visibility = 'hidden';
+        startGame();
+    });
+}
+
+function settingListeners() {
     document.querySelector('.obstacles').addEventListener('change', ()=>{
-        obstAllowed = document.querySelector('.obstacles').checked;
-        obstacleLoc = [];
-        if (obstAllowed) {
-            for(let i = 0; i < (Math.random()*20)+3; i++) {
-                obstacleLoc.push({
-                    x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
-                    y: boxSize*Math.floor(Math.random()*(480 / boxSize))
-                });
-            }
-        }
+        gameState.obstAllowed = document.querySelector('.obstacles').checked;
+        gameState.obstacleLoc = [];
+        generateObstacles();
         uploadBackground();
     });
 
@@ -394,20 +355,24 @@ function insertListeners() {
         while (480*5 % startSize != 0) {
             startSize++;
         }
-        boxSize = Number(startSize);
-        if (obstAllowed) {
-            obstacleLoc = [];
-            for(let i = 0; i < (Math.random()*20)+3; i++) {
-                obstacleLoc.push({
-                    x:boxSize*Math.floor(Math.random()*(480 / boxSize)),
-                    y: boxSize*Math.floor(Math.random()*(480 / boxSize))
-                });
-            }
-        }
+        gameState.boxSize = Number(startSize);
+        generateObstacles();
         uploadBackground();
     });
 
     document.querySelector('.speed-size').addEventListener('change', ()=>{
-        speed = 210 - document.querySelector('.speed-size').value;
+        gameState.speed = 210 - document.querySelector('.speed-size').value;
     });
+}
+
+function generateObstacles() {
+    gameState.obstacleLoc = [];
+    if (gameState.obstAllowed) {
+        for(let i = 0; i < (Math.random()*20)+3; i++) {
+            gameState.obstacleLoc.push({
+                x:gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize)),
+                y: gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize))
+            });
+        }
+    }
 }
