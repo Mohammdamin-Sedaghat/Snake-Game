@@ -1,26 +1,22 @@
-import { renderObjects, uploadBackground } from "./rendering.js";
-import { leaders, currState, gameState, ctx, apple } from "./variables.js";
-
+// import { gameOverListener, starterListeners } from "./listners.js";
+import { renderObjects, uploadBackground, generateObstacles } from "./rendering.js";
+import { leaders, currState, gameState, apple } from "./variables.js";
 let isSetting = false;
 let isLeader = false;
-
-apple.addEventListener('load', uploadBackground);
+starterListeners();
 gameOverListener();
 
 //function to start (restart) game
 function startGame() {
-    currState.snakeArr = [{
-        x: gameState.boxSize*3,
-        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)),
-    }, {
-        x: gameState.boxSize*4,
-        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)),
-    }, {
-        x: gameState.boxSize*5,
-        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)), 
-    }, {
-        x: gameState.boxSize*6,
-        y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize))}];
+    currState.snakeArr = [];
+    for(let i= 3; i < 7; i++) {
+        currState.snakeArr.push(
+            {
+                x: gameState.boxSize*i,
+                y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize)),
+            } 
+        )
+    }
 
     gameState.appleLoc = {x: gameState.boxSize * Math.round((480*1.4) / (2*gameState.boxSize)), y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize))}
     currState.newDir = undefined;
@@ -52,6 +48,7 @@ function startGame() {
 
 function loseState() {
     document.querySelector('.gameover-cont').style.visibility = 'visible';
+    console.log('rawr')
 
     if (currState.snakeArr.length > leaders[2].score) {
         document.querySelector('.grandchild').innerHTML = `
@@ -91,6 +88,7 @@ function loseState() {
         <div class="start-text">You Lost!</div>
         <button class="gameover-button glowbutton">Game Over</button>
     `;
+    gameOverListener();
     generateObstacles();
 }
 
@@ -162,75 +160,71 @@ function game() {
 
     //making the background 
     uploadBackground();
-
+    //rendering the objects
     renderObjects();
 
     setTimeout(game, gameState.speed);
 }
 
-document.querySelector('.setting-button').addEventListener('click', ()=>{
-    if (!isSetting) {
-        document.querySelector('.grandchild').innerHTML = `
-            <div class="start-text">Settings</div>
-            <div class="background-size-cont">
-                <div>Box Size:</div>
-                <input type="range" min="10" max="48" step="2" value=${gameState.boxSize} class="background-size">
-                <div>Obstacles:</div>
-                <label class="obstacles-label">
-                    <input type="checkbox" class="obstacles" ${gameState.obstAllowed ? "checked" : ""}>
-                    <span class="slider"></span>
-                </label>
-                <div>Speed:</div>
-                <input type="range" min="10" max="200" step="20" value=${210 - gameState.speed} class="background-size speed-size">
-            </div>
-        `;
-        settingListeners();
-    } else {
-        document.querySelector('.grandchild').innerHTML = `
-            <div class="start-text">Start</div>
-            <button class="gameover-button glowbutton">Start Game</button>
-        `;
-        gameOverListener();
-    }
-    isSetting = !isSetting;
-    isLeader = false;
-});
+function starterListeners() {
+    apple.addEventListener('load', uploadBackground);
 
-document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
-    if (!isLeader) {
-        let totalHTML = ""
-        totalHTML += `
-            <div class="start-text">Leaderboard</div>
-            <div class="leader-option-cont">
-        `
-        leaders.forEach((leader)=>{
-            totalHTML += `
-                <div class='leader-option'>
-                    <div>${leader.names}</div>
-                    <div>${leader.score}</div>
+    document.querySelector('.setting-button').addEventListener('click', ()=>{
+        if (!isSetting) {
+            document.querySelector('.grandchild').innerHTML = `
+                <div class="start-text">Settings</div>
+                <div class="background-size-cont">
+                    <div>Box Size:</div>
+                    <input type="range" min="10" max="48" step="2" value=${gameState.boxSize} class="background-size">
+                    <div>Obstacles:</div>
+                    <label class="obstacles-label">
+                        <input type="checkbox" class="obstacles" ${gameState.obstAllowed ? "checked" : ""}>
+                        <span class="slider"></span>
+                    </label>
+                    <div>Speed:</div>
+                    <input type="range" min="10" max="200" step="20" value=${210 - gameState.speed} class="background-size speed-size">
                 </div>
-            `
-        });
-        totalHTML += "</div>";
-        document.querySelector('.grandchild').innerHTML = totalHTML;
-        isLeader = !isLeader;
-        isSetting = false;
-    } else {
-        document.querySelector('.grandchild').innerHTML = `
-            <div class="start-text">Start</div>
-            <button class="gameover-button glowbutton">Start Game</button>
-        `;
-        gameOverListener();
-        isLeader = !isLeader;
-        isSetting = false;
-    }
-});
+            `;
+            settingListeners();
+        } else {
+            document.querySelector('.grandchild').innerHTML = `
+                <div class="start-text">Start</div>
+                <button class="gameover-button glowbutton">Start Game</button>
+            `;
+            gameOverListener();
+        }
+        isSetting = !isSetting;
+        isLeader = false;
+    });
 
-function gameOverListener() {
-    document.querySelector('.gameover-button').addEventListener('click', ()=>{
-        document.querySelector('.gameover-button').innerHTML = "Game Over";
-        document.querySelector('.gameover-cont').style.visibility = 'hidden';
-        startGame();
+    document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
+        if (!isLeader) {
+            let totalHTML = ""
+            totalHTML += `
+                <div class="start-text">Leaderboard</div>
+                <div class="leader-option-cont">
+            `
+            leaders.forEach((leader)=>{
+                totalHTML += `
+                    <div class='leader-option'>
+                        <div>${leader.names}</div>
+                        <div>${leader.score}</div>
+                    </div>
+                `
+            });
+            totalHTML += "</div>";
+            document.querySelector('.grandchild').innerHTML = totalHTML;
+            isLeader = !isLeader;
+            isSetting = false;
+        } else {
+            document.querySelector('.grandchild').innerHTML = `
+                <div class="start-text">Start</div>
+                <button class="gameover-button glowbutton">Start Game</button>
+            `;
+            gameOverListener();
+            isLeader = !isLeader;
+            isSetting = false;
+        }
     });
 }
 
@@ -257,14 +251,10 @@ function settingListeners() {
     });
 }
 
-function generateObstacles() {
-    gameState.obstacleLoc = [];
-    if (gameState.obstAllowed) {
-        for(let i = 0; i < (Math.random()*20)+3; i++) {
-            gameState.obstacleLoc.push({
-                x:gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize)),
-                y: gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize))
-            });
-        }
-    }
+function gameOverListener() {
+    document.querySelector('.gameover-button').addEventListener('click', ()=>{
+        document.querySelector('.gameover-button').innerHTML = "Game Over";
+        document.querySelector('.gameover-cont').style.visibility = 'hidden';
+        startGame();
+    });
 }

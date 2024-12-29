@@ -112,3 +112,15 @@ export function renderObjects() {
         ctx.fillRect(particle.x, particle.y, gameState.boxSize, gameState.boxSize);
     });
 }
+
+export function generateObstacles() {
+    gameState.obstacleLoc = [];
+    if (gameState.obstAllowed) {
+        for(let i = 0; i < (Math.random()*20)+3; i++) {
+            gameState.obstacleLoc.push({
+                x:gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize)),
+                y: gameState.boxSize*Math.floor(Math.random()*(480 / gameState.boxSize))
+            });
+        }
+    }
+}
