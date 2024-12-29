@@ -1,9 +1,10 @@
-import { ctx, currState, gameState } from "./variables.js";
+import { ctx, currState, gameState, apple } from "./variables.js";
 
 //function to make background
 export function uploadBackground() {
+    //clearing the place
     ctx.clearRect(0,0,500,500);
-
+    //adding glow to the head of snake
     let head = currState.snakeArr.length === 0 ? [{x:240,y:240}]: currState.snakeArr;
     head = head[head.length -1];
     const radGrad = ctx.createRadialGradient(head.x+8, head.y+8, 10, 240, 240, 360);
@@ -15,6 +16,7 @@ export function uploadBackground() {
     ctx.globalAlpha = 0.2;
     ctx.strokeStyle = radGrad;
     ctx.lineWidth = 2;
+    //drawing the boxes
     for (let i=1;i < (480/gameState.boxSize)+1; i++) {
         ctx.beginPath();
         ctx.moveTo(i*gameState.boxSize, 0);
@@ -27,6 +29,7 @@ export function uploadBackground() {
         ctx.stroke();
     }
 
+    //adding the glow to the apple
     if (gameState.appleLoc.length !== 0) {
         const appleGrad = ctx.createRadialGradient(gameState.appleLoc.x+(gameState.boxSize/2), 
                                                     gameState.appleLoc.y+(gameState.boxSize/2),
@@ -45,10 +48,12 @@ export function uploadBackground() {
 
         
         for (let i= -3; i < 5; i++) {
+            //adding the glow to lines
             ctx.beginPath();
             ctx.moveTo(gameState.appleLoc.x - 3*gameState.boxSize, gameState.appleLoc.y + i*gameState.boxSize);
             ctx.lineTo(gameState.appleLoc.x + 4 * gameState.boxSize, gameState.appleLoc.y + i*gameState.boxSize);
             
+            //adding the mist effect
             ctx.moveTo(gameState.appleLoc.x + i*gameState.boxSize, gameState.appleLoc.y - 3*gameState.boxSize);
             ctx.lineTo(gameState.appleLoc.x + i*gameState.boxSize, gameState.appleLoc.y + 4*gameState.boxSize);
             ctx.stroke();
@@ -91,5 +96,19 @@ export function uploadBackground() {
         });
     }
     
+}
 
+export function renderObjects() {
+    ctx.globalAlpha = 1;
+
+    //apples
+    ctx.drawImage(apple, gameState.appleLoc.x, gameState.appleLoc.y, gameState.boxSize - 1, gameState.boxSize);
+    
+    //drawing the snake
+    let size = currState.snakeArr.length;
+    currState.snakeArr.forEach((particle, i) =>{
+        ctx.fillStyle = `rgb(${9+(35*i/size)}, ${9+(210*i/size)}, ${121+(134*i/size)})`;
+        ctx.strokeStyle = 'blue';
+        ctx.fillRect(particle.x, particle.y, gameState.boxSize, gameState.boxSize);
+    });
 }

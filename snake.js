@@ -1,14 +1,11 @@
-import { uploadBackground } from "./rendering.js";
-import { leaders, currState, gameState, ctx, backgroundImg, apple } from "./variables.js";
+import { renderObjects, uploadBackground } from "./rendering.js";
+import { leaders, currState, gameState, ctx, apple } from "./variables.js";
 
 let isSetting = false;
 let isLeader = false;
 
-document.querySelector('.gameover-button').innerHTML = "Start Game";
-document.querySelector('.suck-text').innerHTML = 'Start!';
-
 apple.addEventListener('load', uploadBackground);
-gameOverListener()
+gameOverListener();
 
 //function to start (restart) game
 function startGame() {
@@ -58,7 +55,7 @@ function loseState() {
 
     if (currState.snakeArr.length > leaders[2].score) {
         document.querySelector('.grandchild').innerHTML = `
-            <div class="suck-text" style="font-size:15px;text-align:center;">
+            <div class="start-text" style="font-size:15px;text-align:center;">
                 Seems like you made it to leaderboard!
             </div>
             <div class="question-cont">
@@ -82,14 +79,18 @@ function loseState() {
                 localStorage.setItem('leaders', JSON.stringify(leaders));
 
                 document.querySelector('.grandchild').innerHTML = `
-                    <div class="suck-text">You Lost!</div>
+                    <div class="start-text">You Lost!</div>
                     <button class="gameover-button glowbutton">Game Over</button>
                 `;
-                gameOverListener()
+                gameOverListener();
             }
         });
     }
 
+    document.querySelector('.grandchild').innerHTML = `
+        <div class="start-text">You Lost!</div>
+        <button class="gameover-button glowbutton">Game Over</button>
+    `;
     generateObstacles();
 }
 
@@ -161,19 +162,8 @@ function game() {
 
     //making the background 
     uploadBackground();
-    ctx.globalAlpha = 1;
 
-    //apples
-    ctx.drawImage(apple, gameState.appleLoc.x, gameState.appleLoc.y, gameState.boxSize - 1, gameState.boxSize);
-
-
-    //drawing the snake
-    let size = currState.snakeArr.length;
-    currState.snakeArr.forEach((particle, i) =>{
-        ctx.fillStyle = `rgb(${9+(35*i/size)}, ${9+(210*i/size)}, ${121+(134*i/size)})`;
-        ctx.strokeStyle = 'blue';
-        ctx.fillRect(particle.x, particle.y, gameState.boxSize, gameState.boxSize);
-    });
+    renderObjects();
 
     setTimeout(game, gameState.speed);
 }
@@ -181,7 +171,7 @@ function game() {
 document.querySelector('.setting-button').addEventListener('click', ()=>{
     if (!isSetting) {
         document.querySelector('.grandchild').innerHTML = `
-            <div class="suck-text">Settings</div>
+            <div class="start-text">Settings</div>
             <div class="background-size-cont">
                 <div>Box Size:</div>
                 <input type="range" min="10" max="48" step="2" value=${gameState.boxSize} class="background-size">
@@ -197,7 +187,7 @@ document.querySelector('.setting-button').addEventListener('click', ()=>{
         settingListeners();
     } else {
         document.querySelector('.grandchild').innerHTML = `
-            <div class="suck-text">Start</div>
+            <div class="start-text">Start</div>
             <button class="gameover-button glowbutton">Start Game</button>
         `;
         gameOverListener();
@@ -210,7 +200,7 @@ document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
     if (!isLeader) {
         let totalHTML = ""
         totalHTML += `
-            <div class="suck-text">Leaderboard</div>
+            <div class="start-text">Leaderboard</div>
             <div class="leader-option-cont">
         `
         leaders.forEach((leader)=>{
@@ -227,7 +217,7 @@ document.querySelector('.leaderboard-button').addEventListener('click', ()=>{
         isSetting = false;
     } else {
         document.querySelector('.grandchild').innerHTML = `
-            <div class="suck-text">Start</div>
+            <div class="start-text">Start</div>
             <button class="gameover-button glowbutton">Start Game</button>
         `;
         gameOverListener();
