@@ -3,11 +3,13 @@ import { renderObjects, uploadBackground, generateObstacles } from "./rendering.
 import { leaders, currState, gameState, apple } from "./variables.js";
 let isSetting = false;
 let isLeader = false;
+let move;
 starterListeners();
 gameOverListener();
 
 //function to start (restart) game
 function startGame() {
+    //setting the location of snake
     currState.snakeArr = [];
     for(let i= 3; i < 7; i++) {
         currState.snakeArr.push(
@@ -17,8 +19,9 @@ function startGame() {
             } 
         )
     }
-
+    //putting apple In correct place. 
     gameState.appleLoc = {x: gameState.boxSize * Math.round((480*1.4) / (2*gameState.boxSize)), y: gameState.boxSize * Math.round(480 / (2*gameState.boxSize))}
+    //making sure the direction is correct
     currState.newDir = undefined;
     currState.direction = '+x';
 
@@ -42,14 +45,21 @@ function startGame() {
             }
         }
     });
-
+    //start the game!
     game();
 }
 
 function loseState() {
+    clearTimeout(move);
+    //bringing back the gameover container
     document.querySelector('.gameover-cont').style.visibility = 'visible';
-    console.log('rawr')
+    document.querySelector('.grandchild').innerHTML = `
+        <div class="start-text">You Lost!</div>
+        <button class="gameover-button glowbutton">Game Over</button>
+    `;
+    gameOverListener();
 
+    //checking if user should be on leaderboard
     if (currState.snakeArr.length > leaders[2].score) {
         document.querySelector('.grandchild').innerHTML = `
             <div class="start-text" style="font-size:15px;text-align:center;">
@@ -61,8 +71,9 @@ function loseState() {
             </div>
         `; 
         document.querySelector('.question-input').addEventListener('keydown', (event)=>{
+            //putting the user in correct place
             if (event.key === 'Enter') {
-                dudeName = document.querySelector('.question-input').value;
+                const dudeName = document.querySelector('.question-input').value;
                 if (currState.snakeArr.length > leaders[0].score) {
                     leaders.splice(0, 0, {names:dudeName, score: currState.snakeArr.length});
                     leaders.pop();
@@ -73,6 +84,7 @@ function loseState() {
                     leaders.splice(2, 0, {names:dudeName, score: currState.snakeArr.length});
                     leaders.pop();
                 }
+                //saving the leaders
                 localStorage.setItem('leaders', JSON.stringify(leaders));
 
                 document.querySelector('.grandchild').innerHTML = `
@@ -84,78 +96,60 @@ function loseState() {
         });
     }
 
-    document.querySelector('.grandchild').innerHTML = `
-        <div class="start-text">You Lost!</div>
-        <button class="gameover-button glowbutton">Game Over</button>
-    `;
-    gameOverListener();
     generateObstacles();
 }
 
 function game() {
+    //getting direction
     currState.direction = currState.newDir || currState.direction
+    //getting the snake's head
+    let head = currState.snakeArr[currState.snakeArr.length - 1];
     //checking if the snake has crashed
-    let touched = false;
-    let last = currState.snakeArr[currState.snakeArr.length - 1];
-    for (let i = 0; i < currState.snakeArr.length; i++) {
-        if (i === currState.snakeArr.length -1) {
-            break;
-        } 
-        if (currState.snakeArr[i].x === last.x && 
-            currState.snakeArr[i].y === last.y) {
+    for (let i = 0; i < currState.snakeArr.length - 1; i++) {
+        if (currState.snakeArr[i].x === head.x && 
+            currState.snakeArr[i].y === head.y) {
             touched = true;
-            break;
+            return loseState();
         }
     }
-    if (touched) {
-        loseState();
-        return ;
-    }
+    let touched = false;
     gameState.obstacleLoc.forEach((obst)=>{
-        if (obst.x === last.x && obst.y === last.y) {
+        if (obst.x === head.x && obst.y === head.y) {
             touched = true;
         }
     });
-    if (touched) {
-        loseState();
-        return ;
-    }
+    if (touched) return loseState();
 
     //checking if the snake ate apples
-    if (currState.snakeArr[currState.snakeArr.length - 1].x === gameState.appleLoc.x &&
-        currState.snakeArr[currState.snakeArr.length - 1].y === gameState.appleLoc.y) {
-        currState.snakeArr.push({
-            x: gameState.appleLoc.x,
-            y: gameState.appleLoc.y
-        });
+    if (head.x === gameState.appleLoc.x && head.y === gameState.appleLoc.y) {
+        //increasing size
+        currState.snakeArr.push({ x: gameState.appleLoc.x, y: gameState.appleLoc.y });
+        //generatign new snake
         gameState.appleLoc.x = Math.floor(Math.random() * (480 / gameState.boxSize)) * gameState.boxSize;
         gameState.appleLoc.y = Math.floor(Math.random() * (480 / gameState.boxSize)) * gameState.boxSize;
     } 
 
     //moving the snake
-    const tail = currState.snakeArr[currState.snakeArr.length - 1];
-    let newTail;
+    let newHead;
     if (currState.direction[1] == "x"){
-        newTail = {
-            x: eval(tail.x + currState.direction[0] + gameState.boxSize),
-            y: tail.y
+        newHead = {
+            x: eval(head.x + currState.direction[0] + gameState.boxSize),
+            y: head.y
         }
     } else if (currState.direction[1] == 'y') {
-        newTail = {
-            x: tail.x,
-            y: eval(tail.y + currState.direction[0] + gameState.boxSize)
+        newHead = {
+            x: head.x,
+            y: eval(head.y + currState.direction[0] + gameState.boxSize)
         }
     }
     currState.snakeArr.splice(0, 1);
-    currState.snakeArr.push(newTail);
+    head = newHead;
+    currState.snakeArr.push(newHead);
 
     //checking bounderies
-    if (currState.snakeArr[currState.snakeArr.length - 1].x > 480 - gameState.boxSize || 
-        currState.snakeArr[currState.snakeArr.length - 1].x < 0 ||
-        currState.snakeArr[currState.snakeArr.length - 1].y > 480 - gameState.boxSize ||
-        currState.snakeArr[currState.snakeArr.length - 1].y < 0) {
-        loseState();
-        return ;
+    if (head.x > 480 - gameState.boxSize || head.x < 0 ||
+        head.y > 480 - gameState.boxSize || head.y < 0) {
+        return loseState();
     }
 
     //making the background 
@@ -163,7 +157,7 @@ function game() {
     //rendering the objects
     renderObjects();
 
-    setTimeout(game, gameState.speed);
+    move = setTimeout(game, gameState.speed);
 }
 
 function starterListeners() {
