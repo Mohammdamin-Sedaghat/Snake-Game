@@ -1,26 +1,37 @@
-<h2>Welcome to Snake Futuristica!🐍</h2>
-In this game, I decided to create a futuristic version of the snake game!🔮
-
-I explored many different concepts of Javascript, and CSS throughout the development of this game. <img src='./images/icons/JS.svg' alt="JS" width="20px"> <img src='./images/icons/CSS.svg' alt="CSS" width="20px"> <img src='./images/icons/HTML.svg' alt="HTML" width="20px">
-
+<h2>Welcome to Snake Futuristica! 🐍</h2>
+Snake Futuristica is the futuristic take on the classic snake game! 🔮  
 
 <h3>Features</h3>
 <hr>
-<strong>Snake Futuristica</strong> has many features, but the most important ones are:
+<strong>Snake Futuristica</strong> offers a variety of exciting features, including:  
 
-* Ability to change speed and the block size. 
-* The option to add blocks. 
-* A local Leaderbaord so that you can always know whos the best between your friend group. 
-* Smooth Controls over the snake using WASD
-* The best Graphics a Snake Game has ever seen!
-* Details, Details, and Details!
-    * faint glow of the apples and barries.
-    * changing of colors of the grid as the snake moves.
-    * Box shadows and text shadows which give a futuristic vibe.
+* **Customizable Speed and Block Size:** Adjust the game's speed and the snake's block size to suit your playstyle.  
+* **Add Obstacles:** Challenge yourself by adding blocks to the grid.  
+* **Local Leaderboard:** Keep track of who's the best in your friend group.  
+* **Smooth Controls:** Navigate the snake seamlessly using the WASD keys.  
+* **Stunning Graphics:** Experience the most visually appealing snake game ever made!  
+* **Attention to Detail:**  
+    * Subtle glow effects on apples and berries.  
+    * Dynamic grid colors that change as the snake moves.  
+    * Box shadows and text shadows for a sleek, futuristic vibe.  
 
-<h3>Challenges I faced</h3>
+<h3>Challenges I Faced</h3>
 <hr>
 
-* At first, I was not familiar with Canvas, and how it works, so I was planning on implementing the game using div tags! However, I decided to do a bit of research, and found out the magic of the Canvas tag. (which you can see the cool stuff that I made while learning here: [Canvas Cool Stuff!](https://github.com/Mohammdamin-Sedaghat/Random-Side-Projects/tree/main/Canvas%20cool%20stuff))
+* **Learning the Canvas API:**  
+Initially, I wasn’t familiar with the `<canvas>` element and considered implementing the game using `<div>` tags. However, after doing some research, I discovered the magic of the Canvas API. (Check out the cool projects I created while learning: [Canvas Cool Stuff!](https://github.com/Mohammdamin-Sedaghat/Random-Side-Projects/tree/main/Canvas%20cool%20stuff))  
 
-* Another Challenge I faced was that this was the first time working with game logic in JavaScript, so learning game theory and logic was an intresting feat. 
+* **Developing Game Logic:**  
+This project marked my first experience with game logic in JavaScript. Learning the principles of game theory and implementing them was a challenging yet rewarding journey.  
+
+
+<h3>How to Play</h3>
+<hr>
+1. Clone or download the repository.  
+2. Open the folder in Visual Studio Code (VSCode).  
+3. Launch `snake.html` in your preferred browser.  
+4. Enjoy the game!
+
+<br>
+
+![Built With Javascript](https://img.shields.io/badge/built%20with-javascript-blue?logo=javascript)
