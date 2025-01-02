@@ -27,6 +27,7 @@ This project marked my first experience with game logic in JavaScript. Learning 
 
 <h3>How to Play</h3>
 <hr>
+
 1. Clone or download the repository.  
 2. Open the folder in Visual Studio Code (VSCode).  
 3. Launch `snake.html` in your preferred browser.  
